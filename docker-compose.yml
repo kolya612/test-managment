@@ -13,6 +13,7 @@ services:
     environment:
       KAFKA_BROKERS: "${FP_KAFKA_BROKERS}"
       DATABASE_URL: "${FP_DATABASE_URL}"
+      KAFKA_TOPIC: "${FP_KAFKA_TOPIC}"
     ports:
       - 127.0.0.1:34014:3000/tcp
     networks:

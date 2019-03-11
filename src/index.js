@@ -7,17 +7,17 @@ const { Pool } = require('pg');
 const field = form.field;
 const sql = new Pool({ connectionString,});
 
-const topic = 'test-topic';
+const topic = process.env.KAFKA_TOPIC;
 const { KFProducer } = require('./kfproducer');
-const xxx = new KFProducer();
-// xxx.send(topic, 'Holala');
+const kafka = new KFProducer();
+// kafka.send(topic, 'Holala');
 
-//console.log(sender);
 
 
 /**
  * CONSUMER
  */
+
 const Kafka2 = require('node-rdkafka');
 
 const consumer = new Kafka2.KafkaConsumer({
@@ -52,7 +52,7 @@ consumer.on('data', function(m) {
 	}
 
 	// Output the actual message contents
-	console.log(JSON.stringify(m));
+	//console.log(JSON.stringify(m));
 	console.log(m.value.toString());
 
 });
@@ -94,6 +94,7 @@ app.post("/users",
 			const querySql = 'INSERT INTO users (name, email, sex) VALUES ($1,$2,$3) RETURNING *';
 			const valueForSql = [req.form.name, req.form.email, req.form.sex];
 			const { rows:user } = await sql.query(querySql, valueForSql);
+			kafka.send(topic, user[0]);
 			rs.status(200).send(user[0]);
 		} catch (err){
 			rs.status(500).send({ 'errorMessage': 'Something went wrong' });
@@ -164,7 +165,7 @@ app.get("/users",
 		  	if(rowCount == 0){
 				rs.status(404).send({ 'errorMessage': 'Users not found' }); 
 		  	}
-			xxx.send(topic, 'PPPPPPPPPxc' + queueNum++);
+			kafka.send(topic, 'test-topic-2-get-user', users, 'user', rowCount);
 		  	rs.status(200).send(users);
 	    } catch (err){
 	    	//rs.status(500).send(err.stack);

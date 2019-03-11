@@ -1,8 +1,8 @@
 /**
  * PRODUCER
  */
-
 const Kafka = require('node-rdkafka');
+const uuidv4 = require('uuid/v4');
 
 class KFProducer {
     constructor() {
@@ -79,7 +79,7 @@ class KFProducer {
     //     this.producer.poll();
     // }
 
-    send (topic, message) {
+    send (topic, type, message, tags, shardKey = null) {
         // console.info('send');
         //
         // if (!this.connected) {
@@ -93,7 +93,20 @@ class KFProducer {
         // console.info('send without queue');
         // message.yes = 1;
         // this._send(topic, message);
-        this.producer.produce(topic, -1, Buffer.from(message));
+        this.producer.produce(
+             topic || type,
+            -1,
+            Buffer.from(
+                JSON.stringify({
+                    id: uuidv4(),
+                    type,
+                    message,
+                    tags,
+                })
+            ),
+            shardKey,
+            Date.now(),
+        );
         this.producer.poll();
     }
 }
@@ -101,29 +114,3 @@ class KFProducer {
 module.exports = {
     KFProducer,
 };
-
-/*
-
-const Kafka = require('node-rdkafka');
-
-const producer = new Kafka.Producer({
-    'client.id': 'kafka',
-    'offset.store.method': 'broker',
-    'metadata.broker.list': process.env.KAFKA_BROKERS,
-    'dr_cb': true
-});
-
-const topic = 'test-topic';
-
-producer.on('ready', function () {
-    producer.produce(topic, -1, Buffer.from('holla'));
-    producer.poll();
-});
-
-producer.on('event.error', function (err) {
-    console.error('Error from producer');
-    console.error(err);
-});
-
-producer.connect();
-*/
