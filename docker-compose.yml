@@ -1,0 +1,20 @@
+version: "2.4"
+
+networks:
+  fixpoint:
+    external: true
+    name: fixpoint_${FP_ENV}
+
+services:
+  test-management:
+    build: .
+    restart: always
+    container_name: "fixpoint.${FP_ENV}.test-management"
+    environment:
+      KAFKA_BROKERS: "${FP_KAFKA_BROKERS}"
+      DATABASE_URL: "${FP_DATABASE_URL}"
+    ports:
+      - 127.0.0.1:34014:3000/tcp
+    networks:
+      - fixpoint
+    command: yarn start
