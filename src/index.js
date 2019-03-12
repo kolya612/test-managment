@@ -17,7 +17,7 @@ const kafka = new KFProducer();
 /**
  * CONSUMER
  */
-
+/*
 const Kafka2 = require('node-rdkafka');
 
 const consumer = new Kafka2.KafkaConsumer({
@@ -62,7 +62,7 @@ consumer.on('disconnected', function(arg) {
 
 //starting the consumer
 consumer.connect();
-
+*/
 //stopping this example after 30s
 //setTimeout(function() {
 //    consumer.disconnect();
@@ -94,7 +94,7 @@ app.post("/users",
 			const querySql = 'INSERT INTO users (name, email, sex) VALUES ($1,$2,$3) RETURNING *';
 			const valueForSql = [req.form.name, req.form.email, req.form.sex];
 			const { rows:user } = await sql.query(querySql, valueForSql);
-			kafka.send(topic, user[0]);
+			kafka.send(topic, 'test-topic-2-create-user', user[0], 'user', user[0].id);
 			rs.status(200).send(user[0]);
 		} catch (err){
 			rs.status(500).send({ 'errorMessage': 'Something went wrong' });

@@ -108,6 +108,7 @@ class KFProducer {
             Date.now(),
         );
         this.producer.poll();
+        console.log(type);
     }
 }
 
